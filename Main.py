@@ -25,7 +25,7 @@ BEP20_ADDRESS = "0x3afa44c7ac99faa566d5bc00f5dfe7d9f64273d6"
 ADMIN_HANDLE = "Ipdnssellersupport"
 
 # ⚠️ এখানে আপনার আসল চ্যানেলের ইউজারনেম দিন (অবশ্যই @ সহ)
-CHANNEL_USERNAME =  @/Global_gmail_tricks
+CHANNEL_USERNAME = "@Global_gmail_tricks"
 
 user_states = {}
 
@@ -166,4 +166,3 @@ if __name__ == '__main__':
     
     print("Bot starting...")
     bot.infinity_polling()
-        
