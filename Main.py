@@ -56,7 +56,7 @@ def callback_inline(call):
     elif call.data == 'cat_social':
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(
-            types.InlineKeyboardButton("🔹 9Proxy (5 GB - $1)", callback_data='pkg_9Proxy 5GB ($1)'),
+            types.InlineKeyboardButton("🔹 9Proxy (1 GB - $1)", callback_data='pkg_9Proxy 1GB ($1)'),
             types.InlineKeyboardButton("🔹 Proxy-Seller (1 GB - $1.02)", callback_data='pkg_Proxy-Seller 1GB ($1.02)'),
             types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
         )
@@ -99,12 +99,18 @@ def callback_inline(call):
 def handle_proof(message):
     chat_id = message.chat.id
     if chat_id in user_states and user_states[chat_id].get('awaiting_proof'):
-        pkg = user_states[chat_id].get('selected_package', 'N/A')
-        bot.send_message(
-            chat_id, 
-            f"✅ Payment proof received for **{pkg}**!\n\nPlease contact Admin to confirm your order: https://t.me/{ADMIN_HANDLE}", 
-            parse_mode='Markdown'
+        
+        markup = types.InlineKeyboardMarkup()
+        btn_admin = types.InlineKeyboardButton("💬 Contact Admin Now", url=f"https://t.me/{ADMIN_HANDLE}")
+        markup.add(btn_admin)
+        
+        error_text = (
+            "❌ **Verification Failed!**\n\n"
+            "System could not verify this Transaction Hash/Screenshot automatically.\n\n"
+            "Please click the button below to send your payment proof directly to the **Admin** for instant manual verification and proxy delivery."
         )
+        
+        bot.send_message(chat_id, error_text, parse_mode='Markdown', reply_markup=markup)
         user_states[chat_id]['awaiting_proof'] = False
 
 if __name__ == '__main__':
