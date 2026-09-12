@@ -32,8 +32,11 @@ def send_welcome(message):
     btn1 = types.InlineKeyboardButton("📧 IP for Gmail Create (Oxylabs)", callback_data='cat_gmail')
     btn2 = types.InlineKeyboardButton("📱 IP for WhatsApp & Instagram", callback_data='cat_social')
     btn3 = types.InlineKeyboardButton("🌐 Premium DNS", callback_data='cat_dns')
+    # 🆕 New Category: Gmail Tools & Setup Video
+    btn_tools = types.InlineKeyboardButton("📹 Gmail Tools & Setup Video ($3)", callback_data='pkg_Gmail Tools & Setup Video ($3)')
     btn4 = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/{ADMIN_HANDLE}")
-    markup.add(btn1, btn2, btn3, btn4)
+    
+    markup.add(btn1, btn2, btn3, btn_tools, btn4)
     welcome_text = f"Welcome {message.from_user.first_name}!\n\nPlease select your required service from the options below:"
     bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
 
@@ -92,6 +95,8 @@ def callback_inline(call):
         bot.send_message(chat_id, payment_text, parse_mode='Markdown', reply_markup=markup)
 
     elif call.data == 'submit_proof':
+        if chat_id not in user_states:
+            user_states[chat_id] = {}
         user_states[chat_id]['awaiting_proof'] = True
         bot.send_message(chat_id, "Please type your Transaction Hash (TxID) or send the payment Screenshot:")
 
@@ -120,3 +125,4 @@ if __name__ == '__main__':
     
     print("Bot starting...")
     bot.infinity_polling()
+                     
