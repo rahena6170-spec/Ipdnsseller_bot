@@ -11,7 +11,7 @@ bot = telebot.TeleBot(BOT_TOKEN)
 BINANCE_PAY_ID = "1228672891"
 BYBIT_UID = "214653317"
 BEP20_ADDRESS = "0x3afa44c7ac99faa566d5bc00f5dfe7d9f64273d6"
-ADMIN_USERNAME = "@GmailTricksGlobal"
+ADMIN_HANDLE = "Ipdnssellersupport"
 # ==========================================
 
 user_states = {}
@@ -23,7 +23,7 @@ def send_welcome(message):
     btn1 = types.InlineKeyboardButton("📧 IP for Gmail Create (Oxylabs)", callback_data='cat_gmail')
     btn2 = types.InlineKeyboardButton("📱 IP for WhatsApp & Instagram", callback_data='cat_social')
     btn3 = types.InlineKeyboardButton("🌐 Premium DNS", callback_data='cat_dns')
-    btn4 = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/.replace('@', '')}")
+    btn4 = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/{ADMIN_HANDLE}")
     
     markup.add(btn1, btn2, btn3, btn4)
     
@@ -84,38 +84,34 @@ def callback_inline(call):
             f"🔸 **Binance Pay ID:** `{BINANCE_PAY_ID}`\n"
             f"🔸 **Bybit UID:** `{BYBIT_UID}`\n"
             f"🔸 **BEP20 Address (USDT):**\n`{BEP20_ADDRESS}`\n\n"
-            "⚠️ **After completing the payment, click below to submit your Transaction Hash (TxID) or Screenshot.**"
+            "⚠️ **After completing payment, click below to submit your Transaction Hash (TxID) or Screenshot.**"
         )
         
         markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("📤 Submit Payment Proof (Hash / Screenshot)", callback_data='submit_proof'))
+        markup.add(types.InlineKeyboardButton("📤 Submit Payment Proof", callback_data='submit_proof'))
         bot.send_message(chat_id, payment_text, parse_mode='Markdown', reply_markup=markup)
 
     elif call.data == 'submit_proof':
         user_states[chat_id]['awaiting_proof'] = True
-        bot.send_message(chat_id, "Please type and send your Transaction Hash (TxID) or upload the payment Screenshot:")
+        bot.send_message(chat_id, "Please type your Transaction Hash (TxID) or send the payment Screenshot:")
 
-# Proof handler (Text/Photo)
+# Proof handler
 @bot.message_handler(content_types=['text', 'photo'])
 def handle_proof(message):
     chat_id = message.chat.id
     
     if chat_id in user_states and user_states[chat_id].get('awaiting_proof'):
         pkg = user_states[chat_id].get('selected_package', 'N/A')
-        username = f"@{message.from_user.username}" if message.from_user.username else "No Username"
-        user_info = f"👤 User: {username} (ID: `{chat_id}`)\n📦 Package: {pkg}"
         
-        if message.content_type == 'text':
-            proof_text = message.text
-            bot.send_message(ADMIN_USERNAME, f"📥 **New Payment Proof (Hash):**\n\n{user_info}\n\n🔑 **Hash/TxID:** `{proof_text}`", parse_mode='Markdown')
-        
-        elif message.content_type == 'photo':
-            photo_id = message.photo[-1].file_id
-            bot.send_photo(ADMIN_USERNAME, photo_id, caption=f"📥 **New Payment Proof (Screenshot):**\n\n{user_info}", parse_mode='Markdown')
-
-        bot.send_message(chat_id, "✅ Your payment proof has been successfully sent to the admin! Your service will be delivered shortly after verification. Thank you!")
+        # User Feedback
+        bot.send_message(
+            chat_id, 
+            f"✅ Payment proof received for **{pkg}**!\n\nPlease contact Admin to confirm your order: https://t.me/{ADMIN_HANDLE}", 
+            parse_mode='Markdown'
+        )
         
         user_states[chat_id]['awaiting_proof'] = False
 
-print("Bot is running...")
-bot.infinity_polling()
+if __name__ == '__main__':
+    print("Bot starting...")
+    bot.infinity_polling()
