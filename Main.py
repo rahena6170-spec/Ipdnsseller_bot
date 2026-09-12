@@ -24,10 +24,42 @@ BYBIT_UID = "214653317"
 BEP20_ADDRESS = "0x3afa44c7ac99faa566d5bc00f5dfe7d9f64273d6"
 ADMIN_HANDLE = "Ipdnssellersupport"
 
+# ⚠️ এখানে আপনার আসল চ্যানেলের ইউজারনেম দিন (অবশ্যই @ সহ)
+CHANNEL_USERNAME =  @/Global_gmail_tricks
+
 user_states = {}
+
+# --- Helper Function: Check Channel Membership ---
+def is_user_subscribed(user_id):
+    try:
+        member = bot.get_chat_member(CHANNEL_USERNAME, user_id)
+        if member.status in ['member', 'administrator', 'creator']:
+            return True
+        return False
+    except Exception as e:
+        return True
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    user_id = message.from_user.id
+    
+    # Check if user is subscribed to the channel
+    if not is_user_subscribed(user_id):
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        clean_channel_handle = CHANNEL_USERNAME.replace('@', '')
+        btn_channel = types.InlineKeyboardButton("📢 Join Official Channel", url=f"https://t.me/{clean_channel_handle}")
+        btn_check = types.InlineKeyboardButton("✅ Joined / Check Status", callback_data='check_join')
+        markup.add(btn_channel, btn_check)
+        
+        join_msg = (
+            f"👋 Hi {message.from_user.first_name}!\n\n"
+            f"⚠️ **Access Restricted!**\n"
+            f"To use this bot, you must join our official Telegram channel first.\n\n"
+            f"Click the button below to join, then click **Joined / Check Status**."
+        )
+        bot.send_message(message.chat.id, join_msg, parse_mode='Markdown', reply_markup=markup)
+        return
+
     markup = types.InlineKeyboardMarkup(row_width=1)
     btn1 = types.InlineKeyboardButton("📧 IP for Gmail Create (Oxylabs)", callback_data='cat_gmail')
     btn2 = types.InlineKeyboardButton("📱 IP for WhatsApp & Instagram", callback_data='cat_social')
@@ -43,6 +75,15 @@ def send_welcome(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     chat_id = call.message.chat.id
+
+    # Handle Force Join verification check
+    if call.data == 'check_join':
+        if is_user_subscribed(call.from_user.id):
+            bot.answer_callback_query(call.id, "✅ Verification Successful! Welcome to the bot.")
+            send_welcome(call.message)
+        else:
+            bot.answer_callback_query(call.id, "❌ You haven't joined the channel yet! Please join first.", show_alert=True)
+        return
 
     if call.data == 'cat_gmail':
         markup = types.InlineKeyboardMarkup(row_width=1)
@@ -125,3 +166,4 @@ if __name__ == '__main__':
     
     print("Bot starting...")
     bot.infinity_polling()
+        
