@@ -23,7 +23,7 @@ def send_welcome(message):
     btn1 = types.InlineKeyboardButton("📧 IP for Gmail Create (Oxylabs)", callback_data='cat_gmail')
     btn2 = types.InlineKeyboardButton("📱 IP for WhatsApp & Instagram", callback_data='cat_social')
     btn3 = types.InlineKeyboardButton("🌐 Premium DNS", callback_data='cat_dns')
-    btn4 = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/@ipdnssellersup.replace('@', '')}")
+    btn4 = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/.replace('@', '')}")
     
     markup.add(btn1, btn2, btn3, btn4)
     
