@@ -88,11 +88,11 @@ def callback_inline(call):
     if call.data == 'cat_gmail':
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(
-            types.InlineKeyboardButton("Oxylabs Corporate 1 GB - $4", callback_data='pkg_Oxylabs Corporate 1GB ($4)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 2 GB - $8", callback_data='pkg_Oxylabs Corporate 2GB ($8)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 3 GB - $12", callback_data='pkg_Oxylabs Corporate 3GB ($12)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 4 GB - $15", callback_data='pkg_Oxylabs Corporate 4GB ($15)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 5 GB - $18", callback_data='pkg_Oxylabs Corporate 5GB ($18)'),
+            types.InlineKeyboardButton("Oxylabs Corporate 1 GB - $3", callback_data='pkg_Oxylabs Corporate 1GB ($4)'),
+            types.InlineKeyboardButton("Oxylabs Corporate 2 GB - $6", callback_data='pkg_Oxylabs Corporate 2GB ($8)'),
+            types.InlineKeyboardButton("Oxylabs Corporate 3 GB - $9", callback_data='pkg_Oxylabs Corporate 3GB ($12)'),
+            types.InlineKeyboardButton("Oxylabs Corporate 4 GB - $12", callback_data='pkg_Oxylabs Corporate 4GB ($15)'),
+            types.InlineKeyboardButton("Oxylabs Corporate 5 GB - $15", callback_data='pkg_Oxylabs Corporate 5GB ($18)'),
             types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
         )
         bot.edit_message_text("📧 **IP for Gmail Create (Oxylabs Corporate):**", chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup)
