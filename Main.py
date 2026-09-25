@@ -19,12 +19,13 @@ def run_flask():
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(BOT_TOKEN)
 
+# Payment Details
+NAGAD_NUMBER = "01641208274"
 BINANCE_PAY_ID = "1228672891"
 BYBIT_UID = "214653317"
 BEP20_ADDRESS = "0x3afa44c7ac99faa566d5bc00f5dfe7d9f64273d6"
-ADMIN_HANDLE = "Ipdnssellersupport"
 
-# ⚠️ এখানে আপনার আসল চ্যানেলের ইউজারনেম দিন (অবশ্যই @ সহ)
+ADMIN_HANDLE = "Gmailbuysell18"
 CHANNEL_USERNAME = "@Global_gmail_tricks"
 
 user_states = {}
@@ -52,112 +53,232 @@ def send_welcome(message):
         markup.add(btn_channel, btn_check)
         
         join_msg = (
-            f"👋 Hi {message.from_user.first_name}!\n\n"
-            f"⚠️ **Access Restricted!**\n"
-            f"To use this bot, you must join our official Telegram channel first.\n\n"
-            f"Click the button below to join, then click **Joined / Check Status**."
+            f"🚫 **ACCESS RESTRICTED**\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"⚠️ You must join our official channel to use this bot:\n"
+            f"👉 {CHANNEL_USERNAME}\n\n"
+            f"🔹 *Join the channel and click 'Joined / Check Status' below.*"
         )
         bot.send_message(message.chat.id, join_msg, parse_mode='Markdown', reply_markup=markup)
         return
 
+    user_states.pop(user_id, None)
     markup = types.InlineKeyboardMarkup(row_width=1)
-    btn1 = types.InlineKeyboardButton("📧 IP for Gmail Create (Oxylabs)", callback_data='cat_gmail')
-    btn2 = types.InlineKeyboardButton("📱 IP for WhatsApp & Instagram", callback_data='cat_social')
-    btn3 = types.InlineKeyboardButton("🌐 Premium DNS", callback_data='cat_dns')
-    # 🆕 New Category: Gmail Tools & Setup Video
-    btn_tools = types.InlineKeyboardButton("📹 Gmail Tools & Setup Video ($4)", callback_data='pkg_Gmail Tools & Setup Video ($4)')
-    btn4 = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/{ADMIN_HANDLE}")
+    btn_ip_dns = types.InlineKeyboardButton("🌐 Buy IP & DNS", callback_data='cat_ip_dns')
+    btn_bypass = types.InlineKeyboardButton("🛠️ Gmail Bypass Tools", callback_data='gmail_bypass')
+    btn_support = types.InlineKeyboardButton("💬 Support / Admin", url=f"https://t.me/{ADMIN_HANDLE}")
     
-    markup.add(btn1, btn2, btn3, btn_tools, btn4)
-    welcome_text = f"Welcome {message.from_user.first_name}!\n\nPlease select your required service from the options below:"
-    bot.send_message(message.chat.id, welcome_text, reply_markup=markup)
+    markup.add(btn_ip_dns, btn_bypass, btn_support)
+    welcome_text = (
+        "🤖 **WELCOME TO SERVICES HUB**\n\n"
+        f"Welcome {message.from_user.first_name}!\n\n"
+        "👇 *Please select an option from the menu below:*"
+    )
+    bot.send_message(message.chat.id, welcome_text, parse_mode='Markdown', reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     chat_id = call.message.chat.id
+    user_id = call.from_user.id
 
     # Handle Force Join verification check
     if call.data == 'check_join':
-        if is_user_subscribed(call.from_user.id):
+        if is_user_subscribed(user_id):
             bot.answer_callback_query(call.id, "✅ Verification Successful! Welcome to the bot.")
             send_welcome(call.message)
         else:
             bot.answer_callback_query(call.id, "❌ You haven't joined the channel yet! Please join first.", show_alert=True)
         return
 
-    if call.data == 'cat_gmail':
-        markup = types.InlineKeyboardMarkup(row_width=1)
-        markup.add(
-            types.InlineKeyboardButton("Oxylabs Corporate 1 GB - $3", callback_data='pkg_Oxylabs Corporate 1GB ($4)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 2 GB - $6", callback_data='pkg_Oxylabs Corporate 2GB ($8)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 3 GB - $9", callback_data='pkg_Oxylabs Corporate 3GB ($12)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 4 GB - $12", callback_data='pkg_Oxylabs Corporate 4GB ($15)'),
-            types.InlineKeyboardButton("Oxylabs Corporate 5 GB - $15", callback_data='pkg_Oxylabs Corporate 5GB ($18)'),
-            types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
-        )
-        bot.edit_message_text("📧 **IP for Gmail Create (Oxylabs Corporate):**", chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup)
-
-    elif call.data == 'cat_social':
-        markup = types.InlineKeyboardMarkup(row_width=1)
-        markup.add(
-            types.InlineKeyboardButton("🔹 9Proxy (1 GB - $1)", callback_data='pkg_9Proxy 1GB ($1)'),
-            types.InlineKeyboardButton("🔹 Proxy-Seller (1 GB - $1.02)", callback_data='pkg_Proxy-Seller 1GB ($1.02)'),
-            types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
-        )
-        bot.edit_message_text("📱 **WhatsApp & Instagram Proxy Options:**", chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup)
-
-    elif call.data == 'cat_dns':
-        markup = types.InlineKeyboardMarkup(row_width=1)
-        markup.add(
-            types.InlineKeyboardButton("Private DNS 1 Month - $1", callback_data='pkg_DNS 1 Month ($1)'),
-            types.InlineKeyboardButton("Private DNS 2 Months - $2", callback_data='pkg_DNS 2 Months ($2)'),
-            types.InlineKeyboardButton("Private DNS 6 Months - $6", callback_data='pkg_DNS 6 Months ($6)'),
-            types.InlineKeyboardButton("Private DNS 1 Year (8 DNS) - $10", callback_data='pkg_DNS 1 Year ($10)'),
-            types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
-        )
-        bot.edit_message_text("🌐 **Premium DNS Packages:**", chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup)
-
-    elif call.data == 'main_menu':
+    if call.data == 'main_menu':
         send_welcome(call.message)
 
-    elif call.data.startswith('pkg_'):
-        selected_pkg = call.data.replace('pkg_', '')
-        user_states[chat_id] = {'selected_package': selected_pkg}
-        payment_text = (
-            f"📦 **Selected Package:** {selected_pkg}\n\n"
-            "💳 **Payment Methods:**\n"
-            f"🔸 **Binance Pay ID:** `{BINANCE_PAY_ID}`\n"
-            f"🔸 **Bybit UID:** `{BYBIT_UID}`\n"
-            f"🔸 **BEP20 Address (USDT):**\n`{BEP20_ADDRESS}`\n\n"
-            "⚠️ **After completing payment, click below to submit your Transaction Hash (TxID) or Screenshot.**"
+    elif call.data == 'cat_ip_dns':
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton("Oxylabs Corporate 1 GB - $3", callback_data='pkg_Oxylabs Corporate 1GB_$3_390 BDT'),
+            types.InlineKeyboardButton("Oxylabs Corporate 2 GB - $4", callback_data='pkg_Oxylabs Corporate 2GB_$4_520 BDT'),
+            types.InlineKeyboardButton("Oxylabs Corporate 3 GB - $6", callback_data='pkg_Oxylabs Corporate 3GB_$6_780 BDT'),
+            types.InlineKeyboardButton("Private DNS 1 Month - $1", callback_data='pkg_Private DNS 1 Month_$1_130 BDT'),
+            types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
         )
-        markup = types.InlineKeyboardMarkup()
-        markup.add(types.InlineKeyboardButton("📤 Submit Payment Proof", callback_data='submit_proof'))
-        bot.send_message(chat_id, payment_text, parse_mode='Markdown', reply_markup=markup)
+        bot.edit_message_text(
+            "🌐 **IP & DNS Packages:**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "Select your required package:",
+            chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup
+        )
 
-    elif call.data == 'submit_proof':
+    elif call.data == 'gmail_bypass':
         if chat_id not in user_states:
             user_states[chat_id] = {}
-        user_states[chat_id]['awaiting_proof'] = True
-        bot.send_message(chat_id, "Please type your Transaction Hash (TxID) or send the payment Screenshot:")
-
-@bot.message_handler(content_types=['text', 'photo'])
-def handle_proof(message):
-    chat_id = message.chat.id
-    if chat_id in user_states and user_states[chat_id].get('awaiting_proof'):
+        user_states[chat_id]['service_type'] = 'bypass_tool'
+        user_states[chat_id]['usd_price'] = '5 USD'
+        user_states[chat_id]['bdt_price'] = '640 BDT'
+        user_states[chat_id]['step'] = 'waiting_for_android_screenshot'
         
         markup = types.InlineKeyboardMarkup()
-        btn_admin = types.InlineKeyboardButton("💬 Contact Admin Now", url=f"https://t.me/{ADMIN_HANDLE}")
-        markup.add(btn_admin)
+        markup.add(types.InlineKeyboardButton("🔙 Back to Menu", callback_data='main_menu'))
         
-        error_text = (
-            "❌ **Verification Failed!**\n\n"
-            "System could not verify this Transaction Hash/Screenshot automatically.\n\n"
-            "Please click the button below to send your payment proof directly to the **Admin** for instant manual verification and proxy delivery."
+        bot.edit_message_text(
+            "🛠️ **GMAIL BYPASS TOOLS**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "📱 **Step 1:** Please send a screenshot of your device's Android version.",
+            chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup
+        )
+
+    elif call.data.startswith('pkg_'):
+        parts = call.data.replace('pkg_', '').split('_')
+        pkg_name = parts[0]
+        usd_val = parts[1]
+        bdt_val = parts[2]
+
+        if chat_id not in user_states:
+            user_states[chat_id] = {}
+        user_states[chat_id]['selected_package'] = pkg_name
+        user_states[chat_id]['usd_price'] = usd_val
+        user_states[chat_id]['bdt_price'] = bdt_val
+        user_states[chat_id]['service_type'] = 'ip_dns'
+
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton(f"NAGAD ({bdt_val})", callback_data='pay_nagad'),
+            types.InlineKeyboardButton(f"BINANCE ({usd_val})", callback_data='pay_binance'),
+            types.InlineKeyboardButton(f"BYBIT ({usd_val})", callback_data='pay_bybit'),
+            types.InlineKeyboardButton(f"USDT BEP20 ({usd_val})", callback_data='pay_bep20'),
+            types.InlineKeyboardButton("🔙 Back to Menu", callback_data='main_menu')
+        )
+        bot.edit_message_text(
+            f"📦 **Selected:** {pkg_name}\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"💳 **Select Payment Method:**",
+            chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup
+        )
+
+    elif call.data == 'select_payment':
+        usd_val = user_states.get(chat_id, {}).get('usd_price', '5 USD')
+        bdt_val = user_states.get(chat_id, {}).get('bdt_price', '640 BDT')
+        
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton(f"NAGAD ({bdt_val})", callback_data='pay_nagad'),
+            types.InlineKeyboardButton(f"BINANCE ({usd_val})", callback_data='pay_binance'),
+            types.InlineKeyboardButton(f"BYBIT ({usd_val})", callback_data='pay_bybit'),
+            types.InlineKeyboardButton(f"USDT BEP20 ({usd_val})", callback_data='pay_bep20'),
+            types.InlineKeyboardButton("🔙 Back to Menu", callback_data='main_menu')
+        )
+        bot.edit_message_text(
+            "💳 **SELECT PAYMENT METHOD**\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "Choose your preferred payment method:",
+            chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup
+        )
+
+    elif call.data in ['pay_nagad', 'pay_binance', 'pay_bybit', 'pay_bep20']:
+        usd_val = user_states.get(chat_id, {}).get('usd_price', '5 USD')
+        bdt_val = user_states.get(chat_id, {}).get('bdt_price', '640 BDT')
+
+        method_map = {
+            'pay_nagad': ("Nagad", f"Send Money Amount: `{bdt_val}`\nPayment Number: `{NAGAD_NUMBER}`"),
+            'pay_binance': ("Binance", f"Pay Amount: `{usd_val}`\nBinance UID: `{BINANCE_PAY_ID}`"),
+            'pay_bybit': ("Bybit", f"Pay Amount: `{usd_val}`\nBybit UID: `{BYBIT_UID}`"),
+            'pay_bep20': ("USDT BEP20", f"Pay Amount: `{usd_val}`\nWallet Address: `{BEP20_ADDRESS}`")
+        }
+        method_name, details = method_map[call.data]
+        
+        if chat_id not in user_states:
+            user_states[chat_id] = {}
+        user_states[chat_id]['payment_method'] = method_name
+        user_states[chat_id]['step'] = 'waiting_for_txid'
+
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        markup.add(
+            types.InlineKeyboardButton("🔄 Change Method", callback_data='select_payment'),
+            types.InlineKeyboardButton("🔙 Back to Menu", callback_data='main_menu')
         )
         
-        bot.send_message(chat_id, error_text, parse_mode='Markdown', reply_markup=markup)
-        user_states[chat_id]['awaiting_proof'] = False
+        bot.edit_message_text(
+            f"💳 **{method_name.upper()} PAYMENT DETAILS**\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"{details}\n\n"
+            f"⚠️ **Important:** Complete the payment and send your Transaction ID / Hash ID below in the chat:",
+            chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup
+        )
+
+@bot.message_handler(content_types=['photo', 'text'])
+def handle_user_input(message):
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+    
+    if chat_id not in user_states:
+        return
+
+    step = user_states[chat_id].get('step')
+
+    # Step 1: Receiving Android Version Screenshot for Bypass Tools
+    if step == 'waiting_for_android_screenshot':
+        if message.photo:
+            user_states[chat_id]['step'] = 'select_payment'
+            usd_val = user_states[chat_id].get('usd_price', '5 USD')
+            bdt_val = user_states[chat_id].get('bdt_price', '640 BDT')
+
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            markup.add(
+                types.InlineKeyboardButton(f"NAGAD ({bdt_val})", callback_data='pay_nagad'),
+                types.InlineKeyboardButton(f"BINANCE ({usd_val})", callback_data='pay_binance'),
+                types.InlineKeyboardButton(f"BYBIT ({usd_val})", callback_data='pay_bybit'),
+                types.InlineKeyboardButton(f"USDT BEP20 ({usd_val})", callback_data='pay_bep20'),
+                types.InlineKeyboardButton("🔙 Back to Menu", callback_data='main_menu')
+            )
+            bot.send_message(
+                chat_id,
+                "✅ **Screenshot Received!**\n"
+                "━━━━━━━━━━━━━━━━━━━━━━\n"
+                "💳 **Step 2:** Please select your payment method:",
+                parse_mode='Markdown',
+                reply_markup=markup
+            )
+        else:
+            bot.send_message(chat_id, "⚠️ Please send a valid screenshot of your Android version.")
+        return
+
+    # Step 2: Receiving Transaction ID / Hash ID
+    if step == 'waiting_for_txid' and message.text:
+        txid = message.text.strip()
+        payment_method = user_states[chat_id].get('payment_method', 'Unknown')
+        service_type = user_states[chat_id].get('service_type', 'General')
+        selected_pkg = user_states[chat_id].get('selected_package', 'Gmail Bypass Tool')
+
+        admin_notification = (
+            f"🚨 **NEW PAYMENT SUBMISSION!**\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"👤 **User ID:** `{user_id}`\n"
+            f"📦 **Service/Package:** {selected_pkg if service_type == 'ip_dns' else 'Gmail Bypass Tool'}\n"
+            f"🏷️ **Method:** {payment_method}\n"
+            f"🔑 **TxID / Hash:** `{txid}`"
+        )
+
+        try:
+            bot.send_message(ADMIN_HANDLE if ADMIN_HANDLE.startswith('@') else f"@{ADMIN_HANDLE}", admin_notification, parse_mode='Markdown')
+        except Exception:
+            pass
+
+        markup = types.InlineKeyboardMarkup()
+        btn_admin = types.InlineKeyboardButton(f"📩 Contact Admin (@{ADMIN_HANDLE})", url=f"https://t.me/{ADMIN_HANDLE}")
+        markup.add(btn_admin)
+
+        bot.send_message(
+            chat_id,
+            f"❌ **TRANSACTION ID SUBMITTED**\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"Submitted TxID: `{txid}`\n\n"
+            f"⚠️ If your transaction ID is incorrect or for instant access, please contact our admin @{ADMIN_HANDLE}.\n"
+            f"Once you message the admin, you will receive your menu/access!",
+            parse_mode='Markdown',
+            reply_markup=markup
+        )
+        user_states.pop(chat_id, None)
+        return
 
 if __name__ == '__main__':
     # Start Web Server in background thread
@@ -166,3 +287,4 @@ if __name__ == '__main__':
     
     print("Bot starting...")
     bot.infinity_polling()
+    
