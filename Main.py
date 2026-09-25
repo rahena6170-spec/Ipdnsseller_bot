@@ -19,8 +19,7 @@ def run_flask():
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 bot = telebot.TeleBot(BOT_TOKEN)
 
-# Payment Details
-NAGAD_NUMBER = "01641208274"
+# Payment Details (Nagad removed)
 BINANCE_PAY_ID = "1228672891"
 BYBIT_UID = "214653317"
 BEP20_ADDRESS = "0x3afa44c7ac99faa566d5bc00f5dfe7d9f64273d6"
@@ -142,11 +141,10 @@ def callback_inline(call):
 
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(
-            types.InlineKeyboardButton(f"NAGAD ({bdt_val})", callback_data='pay_nagad'),
             types.InlineKeyboardButton(f"BINANCE ({usd_val})", callback_data='pay_binance'),
             types.InlineKeyboardButton(f"BYBIT ({usd_val})", callback_data='pay_bybit'),
             types.InlineKeyboardButton(f"USDT BEP20 ({usd_val})", callback_data='pay_bep20'),
-            types.InlineKeyboardButton("🔙 Back to Menu", callback_data='main_menu')
+            types.InlineKeyboardButton("🔙 Back to Main Menu", callback_data='main_menu')
         )
         bot.edit_message_text(
             f"📦 **Selected:** {pkg_name}\n"
@@ -157,11 +155,9 @@ def callback_inline(call):
 
     elif call.data == 'select_payment':
         usd_val = user_states.get(chat_id, {}).get('usd_price', '5 USD')
-        bdt_val = user_states.get(chat_id, {}).get('bdt_price', '640 BDT')
         
         markup = types.InlineKeyboardMarkup(row_width=1)
         markup.add(
-            types.InlineKeyboardButton(f"NAGAD ({bdt_val})", callback_data='pay_nagad'),
             types.InlineKeyboardButton(f"BINANCE ({usd_val})", callback_data='pay_binance'),
             types.InlineKeyboardButton(f"BYBIT ({usd_val})", callback_data='pay_bybit'),
             types.InlineKeyboardButton(f"USDT BEP20 ({usd_val})", callback_data='pay_bep20'),
@@ -174,12 +170,10 @@ def callback_inline(call):
             chat_id, call.message.message_id, parse_mode='Markdown', reply_markup=markup
         )
 
-    elif call.data in ['pay_nagad', 'pay_binance', 'pay_bybit', 'pay_bep20']:
+    elif call.data in ['pay_binance', 'pay_bybit', 'pay_bep20']:
         usd_val = user_states.get(chat_id, {}).get('usd_price', '5 USD')
-        bdt_val = user_states.get(chat_id, {}).get('bdt_price', '640 BDT')
 
         method_map = {
-            'pay_nagad': ("Nagad", f"Send Money Amount: `{bdt_val}`\nPayment Number: `{NAGAD_NUMBER}`"),
             'pay_binance': ("Binance", f"Pay Amount: `{usd_val}`\nBinance UID: `{BINANCE_PAY_ID}`"),
             'pay_bybit': ("Bybit", f"Pay Amount: `{usd_val}`\nBybit UID: `{BYBIT_UID}`"),
             'pay_bep20': ("USDT BEP20", f"Pay Amount: `{usd_val}`\nWallet Address: `{BEP20_ADDRESS}`")
@@ -220,11 +214,9 @@ def handle_user_input(message):
         if message.photo:
             user_states[chat_id]['step'] = 'select_payment'
             usd_val = user_states[chat_id].get('usd_price', '5 USD')
-            bdt_val = user_states[chat_id].get('bdt_price', '640 BDT')
 
             markup = types.InlineKeyboardMarkup(row_width=1)
             markup.add(
-                types.InlineKeyboardButton(f"NAGAD ({bdt_val})", callback_data='pay_nagad'),
                 types.InlineKeyboardButton(f"BINANCE ({usd_val})", callback_data='pay_binance'),
                 types.InlineKeyboardButton(f"BYBIT ({usd_val})", callback_data='pay_bybit'),
                 types.InlineKeyboardButton(f"USDT BEP20 ({usd_val})", callback_data='pay_bep20'),
